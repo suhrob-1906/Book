@@ -41,6 +41,8 @@ export default function Profile() {
                 .eq('user_id', user!.id)
                 .single()
 
+            if (error) throw error
+
             if (data) {
                 setFullName(data.full_name || '')
                 setBio(data.bio || '')
@@ -211,8 +213,8 @@ export default function Profile() {
                                             type="button"
                                             onClick={() => toggleInterest(interest)}
                                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${selectedInterests.includes(interest)
-                                                    ? 'bg-purple-600 text-white'
-                                                    : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                                ? 'bg-purple-600 text-white'
+                                                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                                 }`}
                                         >
                                             {interest}
