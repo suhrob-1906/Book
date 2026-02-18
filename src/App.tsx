@@ -8,11 +8,14 @@ import Profile from './pages/Profile'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import './index.css'
 
+import { Toaster } from 'react-hot-toast'
+
 const queryClient = new QueryClient()
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />

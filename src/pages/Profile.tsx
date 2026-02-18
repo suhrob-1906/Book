@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Loader2, Camera, Save, User, ArrowLeft, Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export default function Profile() {
     const { user } = useAuth()
@@ -237,7 +237,6 @@ export default function Profile() {
                     </CardContent>
                 </Card>
             </motion.div>
-            <Toaster />
         </div>
     )
 }

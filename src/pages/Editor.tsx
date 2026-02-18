@@ -11,7 +11,7 @@ import {
     ChevronRight, Book, FileText,
     Send, Loader2, Share, Image as ImageIcon
 } from 'lucide-react'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 interface Chapter {
     id: string
@@ -114,15 +114,12 @@ export default function Editor() {
         }
     }
 
-    // Save Logic
     const handleSave = async () => {
-        if (!user || user.id !== (bookId ? book?.author_id : user.id)) {
-            if (!bookId) {
-                // Creating new book
-                createBook()
-            } else {
-                updateBook()
-            }
+        if (!user) return
+        if (!bookId || !book?.id) {
+            await createBook()
+        } else {
+            await updateBook()
         }
     }
 
@@ -238,11 +235,47 @@ export default function Editor() {
     }
 
     const handlePublish = async () => {
-        if (!book?.id) return
+        if (!title.trim()) {
+            toast.error('Please enter a book title')
+            return
+        }
         if (!confirm('Are you sure you want to publish this book? It will be visible to everyone.')) return
 
         setSaving(true)
         try {
+            if (!book?.id) {
+                // New Book: Create and Publish immediately
+                const { data, error } = await supabase
+                    .from('books')
+                    .insert({
+                        title,
+                        description,
+                        author_id: user?.id,
+                        status: 'published',
+                        is_published: true,
+                        cover_url: book?.cover_url || null
+                    })
+                    .select()
+                    .single()
+
+                if (error) throw error
+
+                // Create first chapter
+                await supabase
+                    .from('chapters')
+                    .insert({
+                        book_id: data.id,
+                        title: 'Chapter 1',
+                        content: content || '',
+                        order_index: 0
+                    })
+
+                toast.success('Book published successfully!')
+                setTimeout(() => navigate('/feed'), 1500)
+                return
+            }
+
+            // Existing Book: Update to Published
             const { error } = await supabase
                 .from('books')
                 .update({ is_published: true, status: 'published', updated_at: new Date().toISOString() })
@@ -252,9 +285,9 @@ export default function Editor() {
 
             toast.success('Book published successfully!')
             setTimeout(() => navigate('/feed'), 1500)
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            toast.error('Failed to publish book')
+            toast.error('Failed to publish book: ' + (error.message || 'Unknown error'))
         } finally {
             setSaving(false)
         }
@@ -462,7 +495,7 @@ export default function Editor() {
                             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                             Save
                         </Button>
-                        <Button onClick={handlePublish} disabled={saving || !bookId} className="bg-purple-600 hover:bg-purple-700 text-white">
+                        <Button onClick={handlePublish} disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white">
                             <Share className="w-4 h-4 mr-2" />
                             Publish
                         </Button>
@@ -549,7 +582,6 @@ export default function Editor() {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <Toaster />
         </div>
     )
 }
