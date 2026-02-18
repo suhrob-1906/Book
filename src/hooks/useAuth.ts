@@ -14,7 +14,7 @@ export function useAuth() {
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-                fetchProfile(session.user.id)
+                fetchProfile(session.user)
             } else {
                 setLoading(false)
             }
@@ -27,7 +27,7 @@ export function useAuth() {
             setSession(session)
             setUser(session?.user ?? null)
             if (session?.user) {
-                fetchProfile(session.user.id)
+                fetchProfile(session.user)
             } else {
                 setProfile(null)
                 setLoading(false)
@@ -37,15 +37,45 @@ export function useAuth() {
         return () => subscription.unsubscribe()
     }, [])
 
-    const fetchProfile = async (userId: string) => {
+    const createProfile = async (user: User) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .insert([
+                    {
+                        user_id: user.id,
+                        username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+                        full_name: user.user_metadata?.full_name || 'New User',
+                        avatar_url: user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.id,
+                        interests: [],
+                    },
+                ])
+                .select()
+                .single()
+
+            if (error) throw error
+            setProfile(data)
+        } catch (error) {
+            console.error('Error creating profile:', error)
+        }
+    }
+
+    const fetchProfile = async (user: User) => {
         try {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('user_id', user.id)
                 .single()
 
-            if (error) throw error
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    // Profile doesn't exist, create it
+                    await createProfile(user)
+                    return
+                }
+                throw error
+            }
             setProfile(data)
         } catch (error) {
             console.error('Error fetching profile:', error)
