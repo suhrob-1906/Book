@@ -14,6 +14,8 @@ export default function Auth() {
     const [isLogin, setIsLogin] = useState(true)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const { signIn, signUp } = useAuth()
     const navigate = useNavigate()
@@ -58,7 +60,10 @@ export default function Auth() {
                 })
                 setTimeout(() => navigate('/feed'), 500)
             } else {
-                const { error } = await signUp(email, password)
+                if (password !== confirmPassword) {
+                    throw new Error("Passwords don't match")
+                }
+                const { error } = await signUp(email, password, username)
                 if (error) throw error
                 toast.success('✨ Account created! Welcome!', {
                     style: {
@@ -208,6 +213,29 @@ export default function Auth() {
 
                                 <CardContent>
                                     <form onSubmit={handleSubmit} className="space-y-4">
+                                        {!isLogin && (
+                                            <motion.div
+                                                className="space-y-2"
+                                                initial={{ x: -20, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.35 }}
+                                            >
+                                                <label htmlFor="username" className="text-sm font-medium text-white">
+                                                    Username
+                                                </label>
+                                                <Input
+                                                    id="username"
+                                                    type="text"
+                                                    placeholder="johndoe"
+                                                    value={username}
+                                                    onChange={(e) => setUsername(e.target.value)}
+                                                    required={!isLogin}
+                                                    disabled={loading}
+                                                    className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                />
+                                            </motion.div>
+                                        )}
+
                                         <motion.div
                                             className="space-y-2"
                                             initial={{ x: -20, opacity: 0 }}
@@ -250,6 +278,30 @@ export default function Auth() {
                                                 className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
                                             />
                                         </motion.div>
+
+                                        {!isLogin && (
+                                            <motion.div
+                                                className="space-y-2"
+                                                initial={{ x: -20, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.55 }}
+                                            >
+                                                <label htmlFor="confirmPassword" className="text-sm font-medium text-white">
+                                                    Confirm Password
+                                                </label>
+                                                <Input
+                                                    id="confirmPassword"
+                                                    type="password"
+                                                    placeholder="••••••••"
+                                                    value={confirmPassword}
+                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                    required={!isLogin}
+                                                    disabled={loading}
+                                                    minLength={6}
+                                                    className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                />
+                                            </motion.div>
+                                        )}
 
                                         <motion.div
                                             initial={{ y: 20, opacity: 0 }}
