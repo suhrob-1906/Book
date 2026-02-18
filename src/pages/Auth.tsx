@@ -193,177 +193,164 @@ export default function Auth() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
                     >
-                        <Card className="glass border-white/20 shadow-2xl backdrop-blur-xl bg-black/20 overflow-hidden">
-                            {/* Animated border gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-30 blur-xl animate-pulse" />
-
-                            <div className="relative">
-                                <CardHeader>
+                        <div className="relative z-10 w-full max-w-md">
+                            <AnimatePresence mode="wait">
+                                {isLogin ? (
                                     <motion.div
-                                        initial={{ x: -20, opacity: 0 }}
-                                        animate={{ x: 0, opacity: 1 }}
-                                        transition={{ delay: 0.3 }}
+                                        key="login"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        transition={{ duration: 0.3 }}
                                     >
-                                        <CardTitle className="text-3xl text-center text-white">
-                                            {isLogin ? 'Welcome Back' : 'Create Account'}
-                                        </CardTitle>
-                                        <CardDescription className="text-center text-white/70">
-                                            {isLogin ? 'Sign in to continue your journey' : 'Start your writing journey today'}
-                                        </CardDescription>
+                                        <Card className="backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 shadow-2xl border-purple-200 dark:border-purple-800">
+                                            <CardHeader>
+                                                <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                                                    Welcome Back
+                                                </CardTitle>
+                                                <CardDescription className="text-center">
+                                                    Sign in to continue your journey
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <form onSubmit={handleSubmit} className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Email</div>
+                                                        <Input
+                                                            type="email"
+                                                            placeholder="hello@example.com"
+                                                            value={email}
+                                                            onChange={(e) => setEmail(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Password</div>
+                                                        <Input
+                                                            type="password"
+                                                            value={password}
+                                                            onChange={(e) => setPassword(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        type="submit"
+                                                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-500/30"
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign In'}
+                                                    </Button>
+                                                </form>
+
+                                                <div className="mt-6 flex flex-col items-center gap-4">
+                                                    <button
+                                                        onClick={() => setIsLogin(false)}
+                                                        className="text-sm text-purple-600 hover:underline"
+                                                    >
+                                                        Don't have an account? Sign up
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate('/feed')}
+                                                        className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                                                    >
+                                                        Browse as Guest
+                                                    </button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
                                     </motion.div>
-                                </CardHeader>
-
-                                <CardContent>
-                                    <form onSubmit={handleSubmit} className="space-y-4">
-                                        {!isLogin && (
-                                            <motion.div
-                                                className="space-y-2"
-                                                initial={{ x: -20, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.35 }}
-                                            >
-                                                <label htmlFor="username" className="text-sm font-medium text-white">
-                                                    Username
-                                                </label>
-                                                <Input
-                                                    id="username"
-                                                    type="text"
-                                                    placeholder="johndoe"
-                                                    value={username}
-                                                    onChange={(e) => setUsername(e.target.value)}
-                                                    required={!isLogin}
-                                                    disabled={loading}
-                                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
-                                                />
-                                            </motion.div>
-                                        )}
-
-                                        <motion.div
-                                            className="space-y-2"
-                                            initial={{ x: -20, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            transition={{ delay: 0.4 }}
-                                        >
-                                            <label htmlFor="email" className="text-sm font-medium text-white">
-                                                Email
-                                            </label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                placeholder="you@example.com"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                required
-                                                disabled={loading}
-                                                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
-                                            />
-                                        </motion.div>
-
-                                        <motion.div
-                                            className="space-y-2"
-                                            initial={{ x: -20, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            transition={{ delay: 0.5 }}
-                                        >
-                                            <label htmlFor="password" className="text-sm font-medium text-white">
-                                                Password
-                                            </label>
-                                            <Input
-                                                id="password"
-                                                type="password"
-                                                placeholder="••••••••"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                required
-                                                disabled={loading}
-                                                minLength={6}
-                                                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
-                                            />
-                                        </motion.div>
-
-                                        {!isLogin && (
-                                            <motion.div
-                                                className="space-y-2"
-                                                initial={{ x: -20, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.55 }}
-                                            >
-                                                <label htmlFor="confirmPassword" className="text-sm font-medium text-white">
-                                                    Confirm Password
-                                                </label>
-                                                <Input
-                                                    id="confirmPassword"
-                                                    type="password"
-                                                    placeholder="••••••••"
-                                                    value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                                    required={!isLogin}
-                                                    disabled={loading}
-                                                    minLength={6}
-                                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
-                                                />
-                                            </motion.div>
-                                        )}
-
-                                        <motion.div
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            transition={{ delay: 0.6 }}
-                                        >
-                                            <Button
-                                                type="submit"
-                                                className="w-full bg-white text-purple-900 hover:bg-white/90 font-bold text-lg py-6 relative overflow-hidden group shadow-lg"
-                                                disabled={loading}
-                                            >
-                                                <motion.div
-                                                    className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-20 transition-opacity"
-                                                />
-                                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                                    {loading ? (
-                                                        <>
-                                                            <Loader2 className="h-5 w-5 animate-spin" />
-                                                            Please wait
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            {isLogin ? 'Sign In' : 'Sign Up'}
-                                                            <Sparkles className="h-5 w-5" />
-                                                        </>
-                                                    )}
-                                                </span>
-                                            </Button>
-                                        </motion.div>
-                                    </form>
-
+                                ) : (
                                     <motion.div
-                                        className="mt-6 flex flex-col items-center gap-4"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.7 }}
+                                        key="signup"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
                                     >
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsLogin(!isLogin)}
-                                            className="text-sm text-white/80 hover:text-white transition-colors underline decoration-wavy decoration-pink-500/50 underline-offset-4"
-                                            disabled={loading}
-                                        >
-                                            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-                                        </button>
+                                        <Card className="backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 shadow-2xl border-purple-200 dark:border-purple-800">
+                                            <CardHeader>
+                                                <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                                                    Create Account
+                                                </CardTitle>
+                                                <CardDescription className="text-center">
+                                                    Join our community of writers
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <form onSubmit={handleSubmit} className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Username</div>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="johndoe"
+                                                            value={username}
+                                                            onChange={(e) => setUsername(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Email</div>
+                                                        <Input
+                                                            type="email"
+                                                            placeholder="hello@example.com"
+                                                            value={email}
+                                                            onChange={(e) => setEmail(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Password</div>
+                                                        <Input
+                                                            type="password"
+                                                            value={password}
+                                                            onChange={(e) => setPassword(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="text-sm font-medium">Confirm Password</div>
+                                                        <Input
+                                                            type="password"
+                                                            value={confirmPassword}
+                                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                                            required
+                                                            className="bg-white/50 dark:bg-gray-800/50"
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        type="submit"
+                                                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-500/30"
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign Up'}
+                                                    </Button>
+                                                </form>
 
-                                        <div className="w-full h-px bg-white/10" />
-
-                                        <button
-                                            type="button"
-                                            onClick={() => navigate('/feed')}
-                                            className="text-sm font-medium text-white/70 hover:text-white transition-colors flex items-center gap-2 group"
-                                        >
-                                            Browse without signing in
-                                            <span className="group-hover:translate-x-1 transition-transform">→</span>
-                                        </button>
+                                                <div className="mt-6 flex flex-col items-center gap-4">
+                                                    <button
+                                                        onClick={() => setIsLogin(true)}
+                                                        className="text-sm text-purple-600 hover:underline"
+                                                    >
+                                                        Already have an account? Sign in
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate('/feed')}
+                                                        className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                                                    >
+                                                        Browse as Guest
+                                                    </button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
                                     </motion.div>
-                                </CardContent>
-                            </div>
-                        </Card>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </motion.div>
                 </animated.div>
 
