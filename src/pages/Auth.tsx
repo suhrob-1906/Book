@@ -1,6 +1,6 @@
 import { useSpring, animated } from '@react-spring/web'
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
@@ -63,14 +63,20 @@ export default function Auth() {
                 if (password !== confirmPassword) {
                     throw new Error("Passwords don't match")
                 }
-                const { error } = await signUp(email, password, username)
+                const { data, error } = await signUp(email, password, username)
                 if (error) throw error
-                toast.success('✨ Account created! Welcome!', {
-                    style: {
-                        background: '#8b5cf6',
-                        color: '#fff',
-                    },
-                })
+
+                // Check if email confirmation is required (user exists but no session)
+                if (data?.user && !data?.session) {
+                    toast.success('📧 Check your email to confirm account!', {
+                        duration: 5000,
+                        icon: '📩'
+                    })
+                    setIsLogin(true) // Switch to login view
+                    return
+                }
+
+                toast.success('✨ Account created! Welcome!')
                 setTimeout(() => navigate('/onboarding'), 500)
             }
         } catch (err: unknown) {
