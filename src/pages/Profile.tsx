@@ -18,6 +18,7 @@ export default function Profile() {
     const [fetching, setFetching] = useState(true)
 
     const [fullName, setFullName] = useState('')
+    const [username, setUsername] = useState('')
     const [bio, setBio] = useState('')
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -45,6 +46,7 @@ export default function Profile() {
 
             if (data) {
                 setFullName(data.full_name || '')
+                setUsername(data.username || '')
                 setBio(data.bio || '')
                 setAvatarUrl(data.avatar_url)
                 if (data.avatar_url) setAvatarPreview(data.avatar_url)
@@ -106,6 +108,7 @@ export default function Profile() {
                 .from('profiles')
                 .update({
                     full_name: fullName,
+                    username: username,
                     bio: bio,
                     interests: selectedInterests,
                     avatar_url: newAvatarUrl,
@@ -191,6 +194,15 @@ export default function Profile() {
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         placeholder="Your Name"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="username">Username</Label>
+                                    <Input
+                                        id="username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="username"
                                     />
                                 </div>
                                 <div className="space-y-2">

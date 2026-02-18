@@ -17,13 +17,15 @@ interface Chapter {
     id: string
     title: string
     content: string
-    order_index: number
+    chapter_number: number
+    order_index: number // Keep for UI sorting if needed, but DB uses chapter_number
 }
 
 interface BookData {
     id: string
     title: string
     description: string
+    genre: string
     cover_url?: string
     author_id: string
     status: string
@@ -50,6 +52,7 @@ export default function Editor() {
     // Editor State
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
+    const [genre, setGenre] = useState('Fantasy')
     const [chapterTitle, setChapterTitle] = useState('')
     const [content, setContent] = useState('')
 
@@ -72,6 +75,7 @@ export default function Editor() {
                 id: '',
                 title: '',
                 description: '',
+                genre: 'Fantasy',
                 author_id: user.id,
                 status: 'draft'
             })
@@ -96,7 +100,7 @@ export default function Editor() {
                 .from('chapters')
                 .select('*')
                 .eq('book_id', id)
-                .order('order_index', { ascending: true })
+                .order('chapter_number', { ascending: true })
 
             if (chaptersError) throw chaptersError
             setChapters(chaptersData || [])
@@ -130,7 +134,8 @@ export default function Editor() {
                 .from('books')
                 .insert({
                     title: title || 'Untitled Book',
-                    description,
+                    description: description || '',
+                    genre: genre || 'Fantasy',
                     author_id: user?.id,
                     status: 'draft'
                 })
@@ -150,7 +155,7 @@ export default function Editor() {
                     book_id: data.id,
                     title: 'Chapter 1',
                     content: '',
-                    order_index: 0
+                    chapter_number: 1
                 })
                 .select()
                 .single()
@@ -175,7 +180,7 @@ export default function Editor() {
             // Update Book Info
             await supabase
                 .from('books')
-                .update({ title, description, updated_at: new Date().toISOString() })
+                .update({ title, description, genre, updated_at: new Date().toISOString() })
                 .eq('id', book.id)
 
             // Update Active Chapter
@@ -250,6 +255,7 @@ export default function Editor() {
                     .insert({
                         title,
                         description,
+                        genre: genre || 'Fantasy',
                         author_id: user?.id,
                         status: 'published',
                         is_published: true,
@@ -267,7 +273,7 @@ export default function Editor() {
                         book_id: data.id,
                         title: 'Chapter 1',
                         content: content || '',
-                        order_index: 0
+                        chapter_number: 1
                     })
 
                 toast.success('Book published successfully!')
@@ -320,7 +326,7 @@ export default function Editor() {
                     book_id: book.id,
                     title: `Chapter ${newOrder + 1}`,
                     content: '',
-                    order_index: newOrder
+                    chapter_number: newOrder + 1
                 })
                 .select()
                 .single()
@@ -467,12 +473,26 @@ export default function Editor() {
                         </div>
 
                         <div className="flex-1 space-y-4">
-                            <Input
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Book Title"
-                                className="text-2xl md:text-3xl font-bold border-none shadow-none focus-visible:ring-0 px-0 h-auto bg-transparent placeholder:text-gray-400"
-                            />
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <Input
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Book Title"
+                                    className="text-2xl md:text-3xl font-bold border-none shadow-none focus-visible:ring-0 px-0 h-auto bg-transparent placeholder:text-gray-400 flex-1"
+                                />
+                                <div className="flex items-center gap-2">
+                                    <label className="text-xs text-gray-400">Genre:</label>
+                                    <select
+                                        value={genre}
+                                        onChange={(e) => setGenre(e.target.value)}
+                                        className="bg-transparent border border-gray-200 dark:border-gray-800 rounded px-2 py-1 text-xs"
+                                    >
+                                        {['Fantasy', 'Sci-Fi', 'Romance', 'Mystery', 'Thriller', 'Horror', 'Historical', 'Biography', 'Self-Help', 'Poetry'].map(g => (
+                                            <option key={g} value={g}>{g}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                             <Textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}

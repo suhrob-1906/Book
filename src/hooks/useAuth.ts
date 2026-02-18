@@ -39,12 +39,13 @@ export function useAuth() {
 
     const createProfile = async (user: User) => {
         try {
+            const username = user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`
             const { data, error } = await supabase
                 .from('profiles')
                 .upsert(
                     {
                         user_id: user.id,
-                        username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+                        username: `${username}_${Math.random().toString(36).substring(2, 7)}`,
                         full_name: user.user_metadata?.full_name || 'New User',
                         avatar_url: user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.id,
                         interests: [],
