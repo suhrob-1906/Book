@@ -86,16 +86,18 @@ export default function Auth() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 animate-gradient-shift" />
+        <div className="min-h-screen w-full flex items-center justify-center relative overflow-x-hidden bg-gray-900">
+            {/* Animated gradient background - Fixed to cover scrollable areas */}
+            <div className="fixed inset-0 bg-gradient-to-br from-violet-600 via-purple-900 to-indigo-900 animate-gradient-shift z-0" />
 
-            {/* Particles */}
-            <ParticlesBackground />
+            {/* Particles - reduced density to prevent crashes */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <ParticlesBackground />
+            </div>
 
             {/* Floating orbs */}
             <motion.div
-                className="absolute top-20 left-20 w-72 h-72 bg-pink-500/30 rounded-full blur-3xl"
+                className="fixed top-20 left-20 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl z-0"
                 animate={{
                     x: [0, 100, 0],
                     y: [0, -100, 0],
@@ -108,7 +110,7 @@ export default function Auth() {
                 }}
             />
             <motion.div
-                className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"
+                className="fixed bottom-20 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl z-0"
                 animate={{
                     x: [0, -100, 0],
                     y: [0, 100, 0],
@@ -121,7 +123,7 @@ export default function Auth() {
                 }}
             />
 
-            <div className="relative z-10 w-full max-w-md px-4">
+            <div className="relative z-10 w-full max-w-md px-4 py-8">
                 {/* Logo with advanced animation */}
                 <motion.div
                     initial={{ opacity: 0, y: -50, scale: 0.5 }}
@@ -134,7 +136,7 @@ export default function Auth() {
                     className="text-center mb-8"
                 >
                     <motion.div
-                        className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-lg mb-4 relative"
+                        className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-lg mb-4 relative"
                         whileHover={{ scale: 1.1, rotate: 360 }}
                         transition={{ duration: 0.6 }}
                     >
@@ -191,9 +193,9 @@ export default function Auth() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
                     >
-                        <Card className="glass border-white/30 shadow-2xl backdrop-blur-xl bg-white/10 overflow-hidden">
+                        <Card className="glass border-white/20 shadow-2xl backdrop-blur-xl bg-black/20 overflow-hidden">
                             {/* Animated border gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-50 blur-xl animate-pulse" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-30 blur-xl animate-pulse" />
 
                             <div className="relative">
                                 <CardHeader>
@@ -205,7 +207,7 @@ export default function Auth() {
                                         <CardTitle className="text-3xl text-center text-white">
                                             {isLogin ? 'Welcome Back' : 'Create Account'}
                                         </CardTitle>
-                                        <CardDescription className="text-center text-white/80">
+                                        <CardDescription className="text-center text-white/70">
                                             {isLogin ? 'Sign in to continue your journey' : 'Start your writing journey today'}
                                         </CardDescription>
                                     </motion.div>
@@ -231,7 +233,7 @@ export default function Auth() {
                                                     onChange={(e) => setUsername(e.target.value)}
                                                     required={!isLogin}
                                                     disabled={loading}
-                                                    className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
                                                 />
                                             </motion.div>
                                         )}
@@ -253,7 +255,7 @@ export default function Auth() {
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 required
                                                 disabled={loading}
-                                                className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
                                             />
                                         </motion.div>
 
@@ -275,7 +277,7 @@ export default function Auth() {
                                                 required
                                                 disabled={loading}
                                                 minLength={6}
-                                                className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
                                             />
                                         </motion.div>
 
@@ -298,7 +300,7 @@ export default function Auth() {
                                                     required={!isLogin}
                                                     disabled={loading}
                                                     minLength={6}
-                                                    className="bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:bg-white/30 transition-all"
+                                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 transition-all border-none ring-1 ring-white/20 focus:ring-purple-500"
                                                 />
                                             </motion.div>
                                         )}
@@ -310,14 +312,11 @@ export default function Auth() {
                                         >
                                             <Button
                                                 type="submit"
-                                                className="w-full bg-white text-purple-600 hover:bg-white/90 font-semibold text-lg py-6 relative overflow-hidden group"
+                                                className="w-full bg-white text-purple-900 hover:bg-white/90 font-bold text-lg py-6 relative overflow-hidden group shadow-lg"
                                                 disabled={loading}
                                             >
                                                 <motion.div
-                                                    className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"
-                                                    initial={{ x: '-100%' }}
-                                                    whileHover={{ x: '100%' }}
-                                                    transition={{ duration: 0.5 }}
+                                                    className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-20 transition-opacity"
                                                 />
                                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                                     {loading ? (
@@ -337,7 +336,7 @@ export default function Auth() {
                                     </form>
 
                                     <motion.div
-                                        className="mt-6 text-center"
+                                        className="mt-6 flex flex-col items-center gap-4"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.7 }}
@@ -345,10 +344,21 @@ export default function Auth() {
                                         <button
                                             type="button"
                                             onClick={() => setIsLogin(!isLogin)}
-                                            className="text-sm text-white/90 hover:text-white transition-colors underline decoration-wavy decoration-pink-400 underline-offset-4"
+                                            className="text-sm text-white/80 hover:text-white transition-colors underline decoration-wavy decoration-pink-500/50 underline-offset-4"
                                             disabled={loading}
                                         >
                                             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                                        </button>
+
+                                        <div className="w-full h-px bg-white/10" />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => navigate('/feed')}
+                                            className="text-sm font-medium text-white/70 hover:text-white transition-colors flex items-center gap-2 group"
+                                        >
+                                            Browse without signing in
+                                            <span className="group-hover:translate-x-1 transition-transform">→</span>
                                         </button>
                                     </motion.div>
                                 </CardContent>
@@ -367,16 +377,17 @@ export default function Auth() {
                     {['AI Powered', 'Free Forever', 'No Limits'].map((text, i) => (
                         <motion.div
                             key={text}
-                            className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium"
-                            whileHover={{ scale: 1.1, y: -5 }}
+                            className="px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/80 text-xs font-medium"
+                            whileHover={{ scale: 1.1, y: -5, backgroundColor: 'rgba(255,255,255,0.1)' }}
                             animate={{
-                                y: [0, -10, 0],
+                                y: [0, -5, 0],
                             }}
                             transition={{
                                 y: {
-                                    duration: 2,
+                                    duration: 3,
                                     repeat: Infinity,
-                                    delay: i * 0.2,
+                                    delay: i * 0.5,
+                                    ease: 'easeInOut',
                                 },
                             }}
                         >
