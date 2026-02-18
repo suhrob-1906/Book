@@ -2,11 +2,16 @@ import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { BookOpen, Sparkles, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { BookOpen, Sparkles, TrendingUp, User } from 'lucide-react'
 import { useSpring, animated } from '@react-spring/web'
 
 
+import { useAuth } from '@/hooks/useAuth'
+
 export default function Feed() {
+    const { user } = useAuth()
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20 relative overflow-hidden">
             {/* Animated background orbs */}
@@ -36,11 +41,56 @@ export default function Feed() {
             />
 
             <div className="container mx-auto px-4 py-8 relative z-10">
-                {/* Header with animations */}
+                {/* Navigation Header */}
+                <div className="flex justify-between items-center mb-12">
+                    <motion.button
+                        onClick={() => window.location.href = '/'}
+                        className="text-2xl font-bold text-white flex items-center gap-2"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        <BookOpen className="w-8 h-8 text-purple-600" />
+                        <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                            BookCreator
+                        </span>
+                    </motion.button>
+
+                    <div className="flex gap-4">
+                        {user ? (
+                            <>
+                                <Button
+                                    variant="default"
+                                    onClick={() => window.location.href = '/editor'}
+                                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                                >
+                                    <BookOpen className="w-4 h-4 mr-2" />
+                                    Create Book
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => window.location.href = '/profile'}
+                                    className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                                >
+                                    <User className="w-4 h-4 mr-2" />
+                                    Profile
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                onClick={() => window.location.href = '/auth'}
+                                className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                            >
+                                Log In / Register
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Hero Section */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12 text-center"
+                    className="mb-16 text-center"
                 >
                     <motion.div
                         className="inline-flex items-center gap-2 mb-4"
@@ -64,7 +114,7 @@ export default function Feed() {
                     </motion.div>
 
                     <motion.p
-                        className="text-xl text-muted-foreground flex items-center justify-center gap-2"
+                        className="text-xl text-muted-foreground flex items-center justify-center gap-2 mb-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
@@ -75,7 +125,7 @@ export default function Feed() {
 
                     {/* Stats badges */}
                     <motion.div
-                        className="flex justify-center gap-4 mt-6"
+                        className="flex justify-center gap-4"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
@@ -147,7 +197,7 @@ export default function Feed() {
                     </motion.div>
                 </motion.div>
             </div>
-        </div>
+        </div >
     )
 }
 

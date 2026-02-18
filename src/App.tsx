@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Auth from './pages/Auth'
 import Feed from './pages/Feed'
 import Onboarding from './pages/Onboarding'
+import Editor from './pages/Editor'
+import Profile from './pages/Profile'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import './index.css'
 
@@ -20,6 +22,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editor"
+            element={
+              <ProtectedRoute>
+                <Editor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/editor/:bookId"
+            element={
+              <ProtectedRoute>
+                <Editor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />
