@@ -116,6 +116,7 @@ export default function Profile() {
             if (updateError) throw updateError
 
             toast.success('Profile updated!')
+            setTimeout(() => navigate('/feed'), 1000)
 
         } catch (error: any) {
             console.error('Error:', error)

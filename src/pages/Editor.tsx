@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
     Save, Plus, Sparkles,
     ChevronRight, Book, FileText,
-    Send, Loader2
+    Send, Loader2, Share
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -201,6 +201,29 @@ export default function Editor() {
         }
     }
 
+    const handlePublish = async () => {
+        if (!book?.id) return
+        if (!confirm('Are you sure you want to publish this book? It will be visible to everyone.')) return
+
+        setSaving(true)
+        try {
+            const { error } = await supabase
+                .from('books')
+                .update({ is_published: true, status: 'published', updated_at: new Date().toISOString() })
+                .eq('id', book.id)
+
+            if (error) throw error
+
+            toast.success('Book published successfully!')
+            setTimeout(() => navigate('/feed'), 1500)
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to publish book')
+        } finally {
+            setSaving(false)
+        }
+    }
+
     const handleChapterChange = async (chapterId: string) => {
         // Auto-save current chapter before switching
         if (activeChapterId) {
@@ -276,9 +299,18 @@ export default function Editor() {
 
             setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }])
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please check your API key setup.' }])
+            let errorMessage = 'Sorry, I encountered an error. Please check your connection.'
+
+            if (error instanceof Error && error.message.includes('FunctionsFetchError')) {
+                errorMessage = 'AI Service is not reachable. Ensure the Edge Function is deployed.'
+            }
+
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: `⚠️ ${errorMessage}`
+            }])
         } finally {
             setAiLoading(false)
         }
@@ -360,9 +392,13 @@ export default function Editor() {
                         >
                             <Sparkles className="w-5 h-5" />
                         </Button>
-                        <Button onClick={handleSave} disabled={saving}>
+                        <Button onClick={handleSave} disabled={saving} variant="outline">
                             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                             Save
+                        </Button>
+                        <Button onClick={handlePublish} disabled={saving || !bookId} className="bg-purple-600 hover:bg-purple-700 text-white">
+                            <Share className="w-4 h-4 mr-2" />
+                            Publish
                         </Button>
                     </div>
                 </header>

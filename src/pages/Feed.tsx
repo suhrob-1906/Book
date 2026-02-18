@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Card, CardContent } from '@/components/ui/card'
@@ -5,14 +6,49 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Sparkles, TrendingUp, User } from 'lucide-react'
 import { useSpring, animated } from '@react-spring/web'
-
+import { supabase } from '@/lib/supabase'
 
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 
+interface Book {
+    id: string
+    title: string
+    description: string
+    cover_url: string | null
+    created_at: string
+    author: {
+        full_name: string
+        avatar_url: string | null
+    } | null
+}
+
 export default function Feed() {
     const { user } = useAuth()
     const navigate = useNavigate()
+    const [books, setBooks] = useState<Book[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        fetchBooks()
+    }, [])
+
+    const fetchBooks = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('books')
+                .select('*, author:profiles(full_name, avatar_url)')
+                .eq('is_published', true)
+                .order('created_at', { ascending: false })
+
+            if (error) throw error
+            setBooks(data || [])
+        } catch (error) {
+            console.error('Error fetching books:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20 relative overflow-hidden">
@@ -163,9 +199,28 @@ export default function Feed() {
 
                 {/* Book grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[...Array(8)].map((_, i) => (
-                        <BookCardSkeleton key={i} index={i} />
-                    ))}
+                    {/* Book grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {loading ? (
+                            [...Array(8)].map((_, i) => <BookCardSkeleton key={i} index={i} />)
+                        ) : books.length > 0 ? (
+                            books.map((book, i) => (
+                                <BookCard key={book.id} book={book} index={i} onClick={() => navigate(`/editor/${book.id}`)} />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12">
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="inline-block p-6 rounded-xl bg-purple-50 dark:bg-purple-900/10 text-purple-800 dark:text-purple-200"
+                                >
+                                    <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                    <p className="font-medium">No published books yet.</p>
+                                    <p className="text-sm opacity-70">Be the first to publish your story!</p>
+                                </motion.div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Info message */}
@@ -200,6 +255,53 @@ export default function Feed() {
                 </motion.div>
             </div>
         </div >
+    )
+}
+
+function BookCard({ book, index, onClick }: { book: Book; index: number; onClick: () => void }) {
+    const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 })
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 50 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: index * 0.05 }}
+            onClick={onClick}
+        >
+            <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group h-full flex flex-col border-transparent hover:border-purple-200 dark:hover:border-purple-800">
+                <div className="relative aspect-[2/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    {book.cover_url ? (
+                        <img
+                            src={book.cover_url}
+                            alt={book.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20">
+                            <BookOpen className="w-12 h-12 text-purple-300/50" />
+                        </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h3 className="font-bold text-lg leading-tight mb-1 line-clamp-2 group-hover:text-purple-200 transition-colors">
+                            {book.title}
+                        </h3>
+                        {book.author && (
+                            <div className="flex items-center gap-2 text-xs text-gray-300">
+                                {book.author.avatar_url ? (
+                                    <img src={book.author.avatar_url} className="w-4 h-4 rounded-full" />
+                                ) : (
+                                    <User className="w-3 h-3" />
+                                )}
+                                <span className="truncate">{book.author.full_name}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </Card>
+        </motion.div>
     )
 }
 
