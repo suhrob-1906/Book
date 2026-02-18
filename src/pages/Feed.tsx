@@ -7,10 +7,12 @@ import { BookOpen, Sparkles, TrendingUp, User } from 'lucide-react'
 import { useSpring, animated } from '@react-spring/web'
 
 
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Feed() {
     const { user } = useAuth()
+    const navigate = useNavigate()
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20 relative overflow-hidden">
@@ -44,7 +46,7 @@ export default function Feed() {
                 {/* Navigation Header */}
                 <div className="flex justify-between items-center mb-12">
                     <motion.button
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => navigate('/')}
                         className="text-2xl font-bold text-white flex items-center gap-2"
                         whileHover={{ scale: 1.05 }}
                     >
@@ -59,7 +61,7 @@ export default function Feed() {
                             <>
                                 <Button
                                     variant="default"
-                                    onClick={() => window.location.href = '/editor'}
+                                    onClick={() => navigate('/editor')}
                                     className="bg-purple-600 hover:bg-purple-700 text-white"
                                 >
                                     <BookOpen className="w-4 h-4 mr-2" />
@@ -67,7 +69,7 @@ export default function Feed() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => window.location.href = '/profile'}
+                                    onClick={() => navigate('/profile')}
                                     className="border-purple-200 text-purple-700 hover:bg-purple-50"
                                 >
                                     <User className="w-4 h-4 mr-2" />
@@ -77,7 +79,7 @@ export default function Feed() {
                         ) : (
                             <Button
                                 variant="ghost"
-                                onClick={() => window.location.href = '/auth'}
+                                onClick={() => navigate('/auth')}
                                 className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
                             >
                                 Log In / Register
