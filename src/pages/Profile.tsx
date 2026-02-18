@@ -112,7 +112,6 @@ export default function Profile() {
                     bio: bio,
                     interests: selectedInterests,
                     avatar_url: newAvatarUrl,
-                    updated_at: new Date().toISOString(),
                 })
                 .eq('user_id', user.id)
 

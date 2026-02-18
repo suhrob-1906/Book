@@ -180,7 +180,7 @@ export default function Editor() {
             // Update Book Info
             await supabase
                 .from('books')
-                .update({ title, description, genre, updated_at: new Date().toISOString() })
+                .update({ title, description, genre })
                 .eq('id', book.id)
 
             // Update Active Chapter
@@ -190,7 +190,6 @@ export default function Editor() {
                     .update({
                         title: chapterTitle,
                         content,
-                        updated_at: new Date().toISOString()
                     })
                     .eq('id', activeChapterId)
             }
@@ -224,7 +223,7 @@ export default function Editor() {
 
             const { error: updateError } = await supabase
                 .from('books')
-                .update({ cover_url: publicUrl, updated_at: new Date().toISOString() })
+                .update({ cover_url: publicUrl })
                 .eq('id', book.id)
 
             if (updateError) throw updateError
@@ -284,7 +283,7 @@ export default function Editor() {
             // Existing Book: Update to Published
             const { error } = await supabase
                 .from('books')
-                .update({ is_published: true, status: 'published', updated_at: new Date().toISOString() })
+                .update({ is_published: true, status: 'published' })
                 .eq('id', book.id)
 
             if (error) throw error

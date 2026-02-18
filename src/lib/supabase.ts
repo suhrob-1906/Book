@@ -19,6 +19,7 @@ export interface Profile {
     interests: string[]
     age: number | null
     created_at: string
+    updated_at: string
 }
 
 export interface Book {
