@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
     Save, Plus, Sparkles,
     ChevronRight, Book, FileText,
-    Send, Loader2, Share
+    Send, Loader2, Share, Image as ImageIcon
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -201,6 +201,42 @@ export default function Editor() {
         }
     }
 
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || !e.target.files[0] || !book?.id) return
+        const file = e.target.files[0]
+        setSaving(true)
+
+        try {
+            const fileExt = file.name.split('.').pop()
+            const fileName = `covers/${book.id}/${Math.random()}.${fileExt}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file)
+
+            if (uploadError) throw uploadError
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName)
+
+            const { error: updateError } = await supabase
+                .from('books')
+                .update({ cover_url: publicUrl, updated_at: new Date().toISOString() })
+                .eq('id', book.id)
+
+            if (updateError) throw updateError
+
+            setBook(prev => prev ? { ...prev, cover_url: publicUrl } : null)
+            toast.success('Cover updated!')
+        } catch (error: any) {
+            console.error('Error uploading cover:', error)
+            toast.error('Failed to upload cover')
+        } finally {
+            setSaving(false)
+        }
+    }
+
     const handlePublish = async () => {
         if (!book?.id) return
         if (!confirm('Are you sure you want to publish this book? It will be visible to everyone.')) return
@@ -374,13 +410,43 @@ export default function Editor() {
             <div className="flex-1 flex flex-col relative h-full">
                 {/* Toolbar */}
                 <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center px-6 justify-between z-10">
-                    <div className="flex items-center gap-4 flex-1">
-                        <Input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Book Title"
-                            className="text-xl font-bold border-none shadow-none focus-visible:ring-0 px-0 h-auto bg-transparent w-full md:w-96"
-                        />
+                    <div className="flex items-start gap-6 flex-1 max-w-3xl">
+                        {/* Cover Upload */}
+                        <div className="relative group w-24 h-36 md:w-32 md:h-48 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-purple-500 transition-colors cursor-pointer">
+                            {book?.cover_url ? (
+                                <img src={book.cover_url} alt="Cover" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-2">
+                                    <ImageIcon className="w-8 h-8" />
+                                    <span className="text-xs font-medium">Add Cover</span>
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                <span className="text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">Change</span>
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleCoverUpload}
+                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                disabled={saving || !book?.id}
+                            />
+                        </div>
+
+                        <div className="flex-1 space-y-4">
+                            <Input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Book Title"
+                                className="text-2xl md:text-3xl font-bold border-none shadow-none focus-visible:ring-0 px-0 h-auto bg-transparent placeholder:text-gray-400"
+                            />
+                            <Textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Add a short description/blurb for your book..."
+                                className="resize-none border-none shadow-none focus-visible:ring-0 px-0 bg-transparent min-h-[60px] text-gray-600 dark:text-gray-300"
+                            />
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2">

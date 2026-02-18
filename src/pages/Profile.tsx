@@ -104,14 +104,14 @@ export default function Profile() {
 
             const { error: updateError } = await supabase
                 .from('profiles')
-                .upsert({
-                    user_id: user.id,
+                .update({
                     full_name: fullName,
                     bio: bio,
                     interests: selectedInterests,
                     avatar_url: newAvatarUrl,
                     updated_at: new Date().toISOString(),
                 })
+                .eq('user_id', user.id)
 
             if (updateError) throw updateError
 
