@@ -41,7 +41,7 @@ export function useAuth() {
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .insert([
+                .upsert(
                     {
                         user_id: user.id,
                         username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
@@ -49,11 +49,25 @@ export function useAuth() {
                         avatar_url: user.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.id,
                         interests: [],
                     },
-                ])
+                    { onConflict: 'user_id', ignoreDuplicates: true }
+                )
                 .select()
                 .single()
 
-            if (error) throw error
+            if (error) {
+                // If ignoreDuplicates is true and row exists, it doesn't return data but no error.
+                // However, if we want to ensure we have the profile, we should fetch it if data is null.
+                if (!data) {
+                    const { data: existingProfile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .single()
+                    setProfile(existingProfile)
+                    return
+                }
+                throw error
+            }
             setProfile(data)
         } catch (error) {
             console.error('Error creating profile:', error)
