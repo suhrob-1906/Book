@@ -199,28 +199,25 @@ export default function Feed() {
 
                 {/* Book grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {/* Book grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {loading ? (
-                            [...Array(8)].map((_, i) => <BookCardSkeleton key={i} index={i} />)
-                        ) : books.length > 0 ? (
-                            books.map((book, i) => (
-                                <BookCard key={book.id} book={book} index={i} onClick={() => navigate(`/editor/${book.id}`)} />
-                            ))
-                        ) : (
-                            <div className="col-span-full text-center py-12">
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="inline-block p-6 rounded-xl bg-purple-50 dark:bg-purple-900/10 text-purple-800 dark:text-purple-200"
-                                >
-                                    <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                                    <p className="font-medium">No published books yet.</p>
-                                    <p className="text-sm opacity-70">Be the first to publish your story!</p>
-                                </motion.div>
-                            </div>
-                        )}
-                    </div>
+                    {loading ? (
+                        [...Array(8)].map((_, i) => <BookCardSkeleton key={i} index={i} />)
+                    ) : books.length > 0 ? (
+                        books.map((book, i) => (
+                            <BookCard key={book.id} book={book} index={i} onClick={() => navigate(`/editor/${book.id}`)} />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center py-12">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="inline-block p-6 rounded-xl bg-purple-50 dark:bg-purple-900/10 text-purple-800 dark:text-purple-200"
+                            >
+                                <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                <p className="font-medium">No published books yet.</p>
+                                <p className="text-sm opacity-70">Be the first to publish your story!</p>
+                            </motion.div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Info message */}

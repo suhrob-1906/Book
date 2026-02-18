@@ -15,8 +15,8 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster />
       <BrowserRouter>
+        <Toaster position="top-right" reverseOrder={false} />
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/feed" element={<Feed />} />

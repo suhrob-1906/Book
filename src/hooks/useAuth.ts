@@ -92,8 +92,10 @@ export function useAuth() {
                 throw error
             }
             setProfile(data)
-        } catch (error) {
-            console.error('Error fetching profile:', error)
+        } catch (error: any) {
+            console.error('Error fetching profile:', error.message || error)
+            if (error.details) console.error('Details:', error.details)
+            if (error.hint) console.error('Hint:', error.hint)
         } finally {
             setLoading(false)
         }

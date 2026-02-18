@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { BookOpen, Loader2, Sparkles, Zap } from 'lucide-react'
 import ParticlesBackground from '@/components/effects/ParticlesBackground'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true)
@@ -390,7 +390,6 @@ export default function Auth() {
                 </motion.div>
             </div>
 
-            <Toaster position="top-center" />
         </div>
     )
 }

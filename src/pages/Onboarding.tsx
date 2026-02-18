@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label'
 import { Loader2, Camera, Sparkles, Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export default function Onboarding() {
     const { user } = useAuth()
@@ -189,8 +189,8 @@ export default function Onboarding() {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${selectedInterests.includes(interest)
-                                                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25'
-                                                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/25'
+                                                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                                                 }`}
                                         >
                                             {interest}
@@ -216,7 +216,6 @@ export default function Onboarding() {
                     </CardContent>
                 </Card>
             </motion.div>
-            <Toaster />
         </div>
     )
 }
